@@ -6,11 +6,11 @@ public class Script : MonoBehaviour
 {
     [SerializeField] private Enemy _prefab;
     [SerializeField] private float _spawnDelay = 2.0f;
-    [SerializeField] private Transform[] _spawnpoints;
+    [SerializeField] private Transform[] _spawnPoints;
 
     private VectorUtils _vectorUtils;
     private Coroutine _spawnCoroutine;
-    
+
     private void Awake()
     {
         _vectorUtils = new VectorUtils();
@@ -23,15 +23,22 @@ public class Script : MonoBehaviour
             StopCoroutine(_spawnCoroutine);
             _spawnCoroutine = null;
         }
-        
+
         _spawnCoroutine = StartCoroutine(StartSpawn());
     }
 
     private IEnumerator StartSpawn()
     {
-        Spawn();
-        
-        yield return new WaitForSeconds(_spawnDelay);
+        WaitForSeconds wait = new WaitForSeconds(_spawnDelay);
+
+        bool isEnabled = true;
+
+        while (isEnabled)
+        {
+            Spawn();
+
+            yield return wait;
+        }
     }
 
     private void Spawn()
@@ -42,7 +49,12 @@ public class Script : MonoBehaviour
 
     private Vector3 ChooseRandomSpawnPosition()
     {
-        return _spawnpoints[Random.Range(0, _spawnpoints.Length)].position;
+        Vector3 spawnPointPosition = _spawnPoints[Random.Range(0, _spawnPoints.Length)].position;
+        float prefabPositionY = _prefab.transform.position.y;
+
+        Vector3 spawnPosition = new Vector3(spawnPointPosition.x, prefabPositionY, spawnPointPosition.z);
+
+        return spawnPosition;
     }
 
     private Vector3 ChooseEnemyMoveDirection()

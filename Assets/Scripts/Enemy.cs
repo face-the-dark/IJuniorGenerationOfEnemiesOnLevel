@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _moveSpeed = 1.0f;
 
     private Coroutine _moveCoroutine;
-    
+
     public void StartCoroutineMove(Vector3 direction)
     {
         if (_moveCoroutine != null)
@@ -20,8 +20,13 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator StartMove(Vector3 direction)
     {
-        transform.Translate(direction * (_moveSpeed * Time.deltaTime), Space.World);
+        bool isEnabled = true;
 
-        yield return null;
+        while (isEnabled)
+        {
+            transform.Translate(direction * (_moveSpeed * Time.deltaTime), Space.World);
+            
+            yield return null;
+        }
     }
 }

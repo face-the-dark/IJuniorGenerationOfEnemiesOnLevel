@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Waypoint : MonoBehaviour
+public class SpawnPoint : MonoBehaviour
 {
     [SerializeField] private float _gizmosSphereRadius = 1.0f;
     [SerializeField] private Color _gizmosColor = Color.red;
