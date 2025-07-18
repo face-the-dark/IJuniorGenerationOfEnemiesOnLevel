@@ -215,7 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefab: {fileID: 8924407620613524113, guid: 6748b805413239d4e8a6000046e41f5e, type: 3}
   _spawnDelay: 2
-  _spawnpoints:
+  _spawnPoints:
   - {fileID: 1001374993}
   - {fileID: 1155270677}
   - {fileID: 1713429646}
