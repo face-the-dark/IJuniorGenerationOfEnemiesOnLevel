@@ -1,20 +1,20 @@
 using System.Collections;
+using Points;
+using StaticData;
+using StaticData.SO;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Script : MonoBehaviour
+public class Spawner : MonoBehaviour
 {
-    [SerializeField] private Enemy _prefab;
     [SerializeField] private float _spawnDelay = 2.0f;
-    [SerializeField] private Transform[] _spawnPoints;
+    [SerializeField] private SpawnPoint[] _spawnPoints;
 
-    private VectorUtils _vectorUtils;
+    private StaticDataService _staticDataService;
     private Coroutine _spawnCoroutine;
 
-    private void Awake()
-    {
-        _vectorUtils = new VectorUtils();
-    }
+    public void Initialize(StaticDataService staticDataService) => 
+        _staticDataService = staticDataService;
 
     private void Start()
     {
@@ -35,30 +35,26 @@ public class Script : MonoBehaviour
 
         while (isEnabled)
         {
-            Spawn();
+            CreateEnemy();
 
             yield return wait;
         }
     }
 
-    private void Spawn()
+    private void CreateEnemy()
     {
-        Enemy enemy = Instantiate(_prefab, ChooseRandomSpawnPosition(), Quaternion.identity);
-        enemy.StartCoroutineMove(ChooseEnemyMoveDirection());
+        SpawnPoint spawnPoint = ChooseRandomSpawnPoint();
+        EnemyStaticData enemyStaticData = _staticDataService.ForEnemy(spawnPoint.EnemyType);
+
+        Vector3 normalizeSpawnPosition = NormalizeSpawnPosition(spawnPoint.transform.position, enemyStaticData.Prefab.transform.position);
+
+        Enemy enemy = Instantiate(enemyStaticData.Prefab, normalizeSpawnPosition, Quaternion.identity);
+        enemy.StartMoveCoroutine(spawnPoint.Target, enemyStaticData.MoveSpeed);
     }
 
-    private Vector3 ChooseRandomSpawnPosition()
-    {
-        Vector3 spawnPointPosition = _spawnPoints[Random.Range(0, _spawnPoints.Length)].position;
-        float prefabPositionY = _prefab.transform.position.y;
+    private Vector3 NormalizeSpawnPosition(Vector3 spawnPointPosition, Vector3 prefabPosition) => 
+        new(spawnPointPosition.x, prefabPosition.y, spawnPointPosition.z);
 
-        Vector3 spawnPosition = new Vector3(spawnPointPosition.x, prefabPositionY, spawnPointPosition.z);
-
-        return spawnPosition;
-    }
-
-    private Vector3 ChooseEnemyMoveDirection()
-    {
-        return _vectorUtils.GetRandomVector3();
-    }
+    private SpawnPoint ChooseRandomSpawnPoint() => 
+        _spawnPoints[Random.Range(0, _spawnPoints.Length)];
 }
