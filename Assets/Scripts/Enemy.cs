@@ -3,11 +3,9 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed = 1.0f;
-
     private Coroutine _moveCoroutine;
 
-    public void StartCoroutineMove(Vector3 direction)
+    public void StartMoveCoroutine(Transform target, float moveSpeed)
     {
         if (_moveCoroutine != null)
         {
@@ -15,17 +13,17 @@ public class Enemy : MonoBehaviour
             _moveCoroutine = null;
         }
 
-        _moveCoroutine = StartCoroutine(StartMove(direction));
+        _moveCoroutine = StartCoroutine(StartMove(target, moveSpeed));
     }
 
-    private IEnumerator StartMove(Vector3 direction)
+    private IEnumerator StartMove(Transform target, float moveSpeed)
     {
         bool isEnabled = true;
 
         while (isEnabled)
         {
-            transform.Translate(direction * (_moveSpeed * Time.deltaTime), Space.World);
-            
+            transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
+
             yield return null;
         }
     }
